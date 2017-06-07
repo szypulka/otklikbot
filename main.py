@@ -16,7 +16,7 @@ import config
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
-FORMATTER = logging.Formatter('%(asctime)s %(levelname)s [%(processName)s: %(threadName)s] %(message)s')
+FORMATTER = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
 FILE_HANDLER = RotatingFileHandler(
     ''.join((os.path.splitext(os.path.basename(__file__))[0], os.path.extsep, 'log')),
     maxBytes=1024 * 1024,
@@ -82,9 +82,11 @@ class LittleBot(object):
         else:
             return None
 
-    def post_news(self):
+    def post_news(self, status_id=1):
 
-        items = self.get_issues(2)
+        items = self.get_issues(status_id)
+        LOGGER.debug('Issues with status_id %s are: %s', status_id, items)
+
         if items:
             for item in items:
                 if item['id'] <= int(ISSUES_BASE.get('latest_new_issue')):
@@ -106,9 +108,9 @@ class LittleBot(object):
 
 if __name__ == '__main__':
     BOT = telebot.TeleBot(config.telegram_token)
-    LOGGER.info('Latest reported new issue is #%s', ISSUES_BASE.get('latest_new_issue'))
+    LOGGER.info('Latest reported new issue is #%s', int(ISSUES_BASE.get('latest_new_issue')))
 
     NEW_ISSUES_BOT = LittleBot(telegram_bot=BOT)
-    NEW_ISSUES_BOT.post_news()
+    NEW_ISSUES_BOT.post_news(1)
 
     ISSUES_BASE.bgsave()
