@@ -67,14 +67,14 @@ class LittleBot(object):
             self.statuses = msg['issue_statuses']
 
     def get_issues(self, status_id=1):
-        msg = self.__api_request('/issues.json?status_id={}'.format(status_id))
+        msg = self.__api_request('/issues.json?status_id={}&project_id=1'.format(status_id))
 
         if msg:
             current_issues = (build_issue(issue) for issue in msg['issues'])
             return sorted(current_issues, key=lambda k: k['id'])
 
     def post_comment(self, item):
-        post = build_post('Появился ПСР со статусом В работе:', item)
+        post = build_post('Появился новый ПСР:', item)
         try:
             self.bot.send_message(CHANNEL_NAME, post, parse_mode='html', disable_web_page_preview=True)
             self.database.set('latest_new_issue', item['id'])
