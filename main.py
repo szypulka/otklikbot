@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import os
-import time
 
 import logging
 from logging.handlers import RotatingFileHandler
@@ -35,7 +34,6 @@ if __name__ == '__main__':
     LOGGER.info('Latest reported new issue is #%s', int(ISSUES_BASE.get('latest_new_issue')))
 
     NEW_ISSUES_BOT = LittleBot(telegram_bot=BOT, redis=ISSUES_BASE, logger=LOGGER)
-    
     NEW_ISSUES_BOT.post_news(1)
 
     ISSUES_BASE.bgsave()

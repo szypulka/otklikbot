@@ -73,6 +73,9 @@ class LittleBot(object):
             current_issues = (build_issue(issue) for issue in msg['issues'])
             return sorted(current_issues, key=lambda k: k['id'])
 
+    def _filter_not_reported(self, items, db_table='latest_new_issue'):
+        return [item for item in items if item['id'] > int(self.database.get(db_table))]
+
     def post_comment(self, item):
         post = build_post('Появился новый ПСР:', item)
         try:
@@ -83,11 +86,15 @@ class LittleBot(object):
             self.logger.warning('Message about issue#%s is not sent. %s', item['id'], error)
 
     def post_news(self, status_id=1):
-
+        '''
+        Checks Redmine for new issues and sends them to Telegram
+        :param status_id: Status of issues to filter
+        :return: None
+        '''
         items = self.get_issues(status_id)
         self.logger.debug('Issues with status_id %s are: %s', status_id, items)
 
-        fresh_items = filter(lambda x: x['id'] > int(self.database.get('latest_new_issue')), items) if items else []
+        fresh_items = self._filter_not_reported(items)
         for item in fresh_items:
             self.post_comment(item)
             time.sleep(1)
