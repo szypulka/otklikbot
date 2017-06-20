@@ -2,7 +2,6 @@
 
 import time
 import json
-from json.decoder import JSONDecodeError
 
 import requests
 from telebot.apihelper import ApiException
@@ -57,7 +56,7 @@ class LittleBot(object):
             return json.loads(msg.text)
         except NewConnectionError:
             self.logger.error('Failed to establish a new connection to %s', request_url)
-        except JSONDecodeError:
+        except ValueError:
             self.logger.error('RedMine API on %d responds with %s %s %s',
                               request_url, msg.status_code, msg.reason, msg.text)
 
