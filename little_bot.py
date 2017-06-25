@@ -15,10 +15,14 @@ CHANNEL_NAME = config.telegram_channel_name
 
 
 def build_issue(issue):
+    for custom_field in issue['custom_fields']:
+        if custom_field['id'] == 3:
+            current_num = custom_field['value'].lstrip('0')
     return {
-        'newsline': '{}'.format(issue['subject']),
+        'newsline': 'ПСР #{}'.format(current_num),
         'link': '<a href="{}/issues/{}">ПСР #{}</a>'.format(REDMINE_API_URL, issue['id'], issue['id']),
-        'id': issue['id']
+        'id': issue['id'],
+        'n': current_num
     }
 
 
